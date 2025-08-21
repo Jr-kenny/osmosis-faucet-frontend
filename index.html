@@ -1,112 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osmosis Testnet Faucet</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            margin: 0;
-            flex-direction: column;
-        }
-        .container {
-            max-width: 600px;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            background-color: #111;
-        }
-        h1 {
-            color: #00ff00;
-        }
-        p {
-            margin: 10px 0;
-        }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #222;
-            border: 1px solid #555;
-            color: #fff;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #00ff00;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #00e600;
-        }
-        #status-message {
-            margin-top: 15px;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Osmosis Testnet Faucet</h1>
-        <p>Enter your wallet address below to receive 0.1 OSMO on the testnet.</p>
-        <p id="requests-counter"></p>
-        <input type="text" id="wallet-input" placeholder="Paste your wallet address here">
-        <button id="submit-button">Request OSMO</button>
-        <p id="status-message"></p>
-        <p style="margin-top: 20px;">Made with love by jrkenny</p>
-    </div>
-
-    <script>
-        const API_URL = "http://5.180.30.82:3000"; // Your VPS IP and Port
-        
-        document.getElementById('submit-button').addEventListener('click', async () => {
-            const walletAddress = document.getElementById('wallet-input').value;
-            const statusMessage = document.getElementById('status-message');
-            const submitButton = document.getElementById('submit-button');
-
-            if (!walletAddress) {
-                statusMessage.textContent = "Please enter a wallet address.";
-                statusMessage.style.color = 'red';
-                return;
-            }
-
-            submitButton.disabled = true;
-            submitButton.textContent = "Processing...";
-            statusMessage.textContent = "Sending request to the faucet...";
-            statusMessage.style.color = '#fff';
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ wallet: walletAddress })
-                });
-
-                const data = await response.json();
-                statusMessage.textContent = data.message;
-                statusMessage.style.color = response.ok ? '#00ff00' : 'red';
-            } catch (error) {
-                statusMessage.textContent = "An error occurred. Please try again later.";
-                statusMessage.style.color = 'red';
-                console.error('Error:', error);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = "Request OSMO";
-            }
-        });
-    </script>
-</body>
-</html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Osmosis Testnet Faucet</title>
+ </head>
+ <body style="background:#111; color:#eee; font-family:Arial; text-align:center; margin-top:50px;">
+     <h1>Osmosis Testnet Faucet <span style="font-size:1.5em;">💧</span></h1>
+     <p>Enter your Osmosis testnet address to receive test tokens.</p>
+     <form id="faucet-form">
+         <input type="text" id="address" placeholder="osm...address" size="50" style="padding:10px; margin-bottom:10px; background:#222; color:#eee; border:1px solid #555; border-radius:5px;"/>
+         <button type="submit" style="padding:10px 20px; background:#00ff00; color:#000; border:none; border-radius:5px; cursor:pointer;">Request Tokens</button>
+     </form>
+     <p id="result" style="margin-top:15px;"></p>
+     <footer style="margin-top:30px;">
+         <p>Built with <span style="color:red;">❤️</span> by <a href="https://x.com/Jrken_ny" target="_blank" style="color:#00aced;">jrkenny</a></p>
+     </footer>
+     <script>
+         document.getElementById('faucet-form').addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const address = document.getElementById('address').value;
+             const res = await fetch('/faucet', {
+                 method: 'POST',
+                 headers: {'Content-Type': 'application/json'},
+                 body: JSON.stringify({address})
+             });
+             const data = await res.json();
+             document.getElementById('result').textContent = data.message || JSON.stringify(data);
+         });
+     </script>
+ </body>
+ </html>
